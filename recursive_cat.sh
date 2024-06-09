@@ -15,9 +15,9 @@ print_files_recursively() {
             echo "${prefix}${file##*/}:"
             print_files_recursively "$file" "$prefix|   "
         elif [ -f "$file" ]; then
-            echo "---------------------------------------------"
+            echo "--------------------------------------------"
             echo "Contents of ${file}:"
-            echo "---------------------------------------------"
+            echo "--------------------------------------------"
             cat "$file"
             echo
         fi
