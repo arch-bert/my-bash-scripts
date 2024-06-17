@@ -15,11 +15,21 @@ print_files_recursively() {
             echo "${prefix}${file##*/}:"
             print_files_recursively "$file" "$prefix|   "
         elif [ -f "$file" ]; then
-            echo "--------------------------------------------"
-            echo "Contents of ${file}:"
-            echo "--------------------------------------------"
-            cat "$file"
-            echo
+            # Check for data files (.csv)
+            if [[ "$file" == *.csv ]]; then
+                echo "--------------------------------------------"
+                echo "Contents of ${file} (first few rows):"
+                echo "--------------------------------------------"
+                head -n 10 "$file"
+                echo
+            # ignore machine code files (.pyc, executables, xlsx)
+            elif [[ "$file" != *.pyc ]] && [[ "$file" != *.xlsx ]] && [[ "$file" != *"/bin/"* ]]; then  # Add more conditions as needed
+                echo "--------------------------------------------"
+                echo "Contents of ${file}:"
+                echo "--------------------------------------------"
+                cat "$file"
+                echo
+            fi
         fi
     done
 }
