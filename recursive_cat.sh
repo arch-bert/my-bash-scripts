@@ -64,7 +64,7 @@ ignore_dirs=("$@")
 # Capture the output of print_files_recursively to a variable
 files_output=$(print_files_recursively . "" "${ignore_dirs[@]}")
 
-# Print the file contents
+# Copy file contents to clipboard
 {
     echo "File Tree:"
     echo "$tree_output"
