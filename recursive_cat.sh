@@ -15,6 +15,9 @@ print_files_recursively() {
     for file in "$dir"/*; do
         if [ -d "$file" ]; then
             local skip=false
+            if [[ "$file" == "$dir/.git" ]]; then
+                skip=true
+            fi
             for ignore in "${ignore_dirs[@]}"; do
                 if [[ "$file" == *"$ignore"* ]]; then
                     skip=true
@@ -22,8 +25,8 @@ print_files_recursively() {
                 fi
             done
 
-            if [[ "$skip" == false && "$file" != *".git"* ]]; then
-                echo "${prefix}${file##*/}:"
+            if [[ "$skip" == false ]]; then
+                echo "${prefix}${file##*/}/"
                 print_files_recursively "$file" "$prefix|   " "${ignore_dirs[@]}"
             fi
         elif [ -f "$file" ]; then
@@ -38,7 +41,7 @@ print_files_recursively() {
                 # Check for data files (.csv)
                 if [[ "$file" == *.csv ]]; then
                     echo "--------------------------------------------"
-                    echo "Contents of ${file} (first few rows):"
+                    echo "Contents of ${file}:"
                     echo "--------------------------------------------"
                     head -n 10 "$file"
                     echo
