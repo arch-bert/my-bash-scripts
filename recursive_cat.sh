@@ -2,22 +2,21 @@
 
 # Function to print the file tree excluding the .git directory
 print_tree() {
-    tree
+    tree -d
 }
 
-# Function to print files recursively excluding the .git directory and specified directories
+# Function to print files recursively, excluding specified directories and certain file types
 print_files_recursively() {
     local dir="$1"
     local prefix="$2"
     shift 2
-    local ignore_dirs=("$@")
+    local ignore_dirs=(".git" "$@")  # Always ignore the .git directory
 
     for file in "$dir"/*; do
+        # Check if the file is a directory
         if [ -d "$file" ]; then
             local skip=false
-            if [[ "$file" == "$dir/.git" ]]; then
-                skip=true
-            fi
+            # Check if the directory is in the ignore list
             for ignore in "${ignore_dirs[@]}"; do
                 if [[ "$file" == *"$ignore"* ]]; then
                     skip=true
@@ -26,27 +25,28 @@ print_files_recursively() {
             done
 
             if [[ "$skip" == false ]]; then
-                echo "${prefix}${file##*/}/"
+                # echo "${prefix}${file##*/}/"
                 print_files_recursively "$file" "$prefix|   " "${ignore_dirs[@]}"
             fi
-        elif [ -f "$file" ]; then
-            if [[ ! -s "$file" ]]; then
-                echo "<empty file>"
-            else
-                # Skip PDF files
-                if [[ "$file" == *.pdf ]]; then
-                    continue
-                fi
 
-                # Check for data files (.csv)
+        # Check if the file is a regular file
+        elif [ -f "$file" ]; then
+            # Skip specific file types
+            if [[ "$file" == *.pdf || "$file" == *.png || "$file" == *.jpg || "$file" == *.jpeg || "$file" == *.gif || "$file" == *.pyc || "$file" == *.xlsx || "$file" == *.exe ]]; then
+                continue
+            fi
+
+            if [[ ! -s "$file" ]]; then
+                echo "${prefix}<empty file>"
+            else
+                # Special handling for CSV files (print first 10 lines)
                 if [[ "$file" == *.csv ]]; then
                     echo "--------------------------------------------"
-                    echo "Contents of ${file}:"
+                    echo "Contents of ${file} (first few rows):"
                     echo "--------------------------------------------"
                     head -n 10 "$file"
                     echo
-                # Ignore machine code files (.pyc, executables, xlsx)
-                elif [[ "$file" != *.pyc ]] && [[ "$file" != *.xlsx ]] && [[ "$file" != *"/bin/"* ]]; then  # Add more conditions as needed
+                else
                     echo "--------------------------------------------"
                     echo "Contents of ${file}:"
                     echo "--------------------------------------------"
@@ -58,16 +58,16 @@ print_files_recursively() {
     done
 }
 
-# Print the file tree
+# Print the file tree excluding .git directory
 tree_output=$(print_tree)
 
-# Get ignore directories from arguments
+# Get ignore directories from script arguments (passed in as $1, $2, etc.)
 ignore_dirs=("$@")
 
-# Capture the output of print_files_recursively to a variable
+# Print the files recursively excluding specified directories (and always .git)
 files_output=$(print_files_recursively . "" "${ignore_dirs[@]}")
 
-# Copy file contents to clipboard
+# Combine the tree and file contents and copy to clipboard
 {
     echo "File Tree:"
     echo "$tree_output"
