@@ -10,7 +10,8 @@ print_files_recursively() {
     local dir="$1"
     local prefix="$2"
     shift 2
-    local ignore_dirs=(".git" "$@")  # Always ignore the .git directory
+    # Always ignore the .git directory
+    local ignore_dirs=(".git" "$@")
 
     for file in "$dir"/*; do
         # Check if the file is a directory
@@ -25,7 +26,6 @@ print_files_recursively() {
             done
 
             if [[ "$skip" == false ]]; then
-                # echo "${prefix}${file##*/}/"
                 print_files_recursively "$file" "$prefix|   " "${ignore_dirs[@]}"
             fi
 
