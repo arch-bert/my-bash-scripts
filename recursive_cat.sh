@@ -2,7 +2,7 @@
 
 # Function to print the file tree excluding the .git directory
 print_tree() {
-    tree -d
+    tree
 }
 
 # Function to print files recursively, excluding specified directories and certain file types
