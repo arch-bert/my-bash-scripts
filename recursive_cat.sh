@@ -2,7 +2,7 @@
 
 # Function to print the file tree excluding the .git directory
 print_tree() {
-    tree
+    tree -I '.*|__pycache__'
 }
 
 # Function to print files recursively, excluding specified directories and certain file types
@@ -10,10 +10,13 @@ print_files_recursively() {
     local dir="$1"
     local prefix="$2"
     shift 2
-    # Always ignore the .git directory
-    local ignore_dirs=(".git" "$@")
+    # Always ignore the .git, __pycache__, and hidden directories
+    local ignore_dirs=(".git" "__pycache__" "$@")
 
     for file in "$dir"/*; do
+        # Skip hidden files and directories
+        [[ "$(basename "$file")" == .* ]] && continue
+
         # Check if the file is a directory
         if [ -d "$file" ]; then
             local skip=false
@@ -31,6 +34,9 @@ print_files_recursively() {
 
         # Check if the file is a regular file
         elif [ -f "$file" ]; then
+            # Skip hidden files
+            [[ "$(basename "$file")" == .* ]] && continue
+
             # Skip specific file types
             if [[ "$file" == *.pdf || "$file" == *.png || "$file" == *.jpg || "$file" == *.jpeg || "$file" == *.gif || "$file" == *.pyc || "$file" == *.xlsx || "$file" == *.exe ]]; then
                 continue
@@ -64,7 +70,7 @@ tree_output=$(print_tree)
 # Get ignore directories from script arguments (passed in as $1, $2, etc.)
 ignore_dirs=("$@")
 
-# Print the files recursively excluding specified directories (and always .git)
+# Print the files recursively excluding specified directories (and always .git, __pycache__, hidden dirs)
 files_output=$(print_files_recursively . "" "${ignore_dirs[@]}")
 
 # Combine the tree and file contents and copy to clipboard
