@@ -37,8 +37,8 @@ print_files_recursively() {
             # Skip hidden files
             [[ "$(basename "$file")" == .* ]] && continue
 
-            # Skip specific file types
-            if [[ "$file" == *.pdf || "$file" == *.png || "$file" == *.jpg || "$file" == *.jpeg || "$file" == *.gif || "$file" == *.pyc || "$file" == *.xlsx || "$file" == *.exe ]]; then
+            # Skip specific file types and package-lock.json
+            if [[ "$file" == *.pdf || "$file" == *.png || "$file" == *.jpg || "$file" == *.jpeg || "$file" == *.gif || "$file" == *.pyc || "$file" == *.xlsx || "$file" == *.exe || "$(basename "$file")" == "package-lock.json" ]]; then
                 continue
             fi
 
