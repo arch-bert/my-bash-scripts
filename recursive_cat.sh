@@ -2,7 +2,7 @@
 
 # Function to print the file tree excluding the .git directory
 print_tree() {
-    tree -I '.*|__pycache__'
+    tree -I '.*|__pycache__|node_modules'
 }
 
 # Function to print files recursively, excluding specified directories and certain file types
@@ -11,7 +11,7 @@ print_files_recursively() {
     local prefix="$2"
     shift 2
     # Always ignore the .git, __pycache__, and hidden directories
-    local ignore_dirs=(".git" "__pycache__" "$@")
+    local ignore_dirs=(".git" "__pycache__" "node_modules" "$@")
 
     for file in "$dir"/*; do
         # Skip hidden files and directories
